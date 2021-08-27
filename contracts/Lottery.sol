@@ -61,12 +61,12 @@ contract Lottery {
 
     function pushBet(byte challenges) internal returns(bool) {
         BetInfo memory b;
-        b.bettor = msg.sender;
-        b.answerBlockNumber = block.number + BET_BLOCK_INTERVAL;
-        b.challenges = challenges;
+        b.bettor = msg.sender; // 20byte
+        b.answerBlockNumber = block.number + BET_BLOCK_INTERVAL; // 32byte
+        b.challenges = challenges; // byte
 
         _bets[_tail] = b;
-        _tail++;
+        _tail++; // 32byte 변홬
 
         return true;
     }
