@@ -50,7 +50,23 @@ contract Lottery {
     
 
     // Distribute: 검증
-        // check the answer
+    function distribute() public {
+        uint256 cur;
+        BetInfo memory b;
+
+        for(cur=_head;cur<_tail; cur++) {
+            b = _bets[cur];
+
+            // 정답을 확인하기 위해서는 정답 블록보다 현재 마이닝된 블록이 더 커야 한다
+            // Checkable : block.number > AnswerBlockNumber && block.number < BLOCK_LIMIT + AnswerBlockNumber
+
+            // Not Revealed: block.number <= AnswerBlockNumber
+
+            // Block Limit Passed: bock.number >= AnswerBlockNumber + BLOCK_LIMIT
+        }
+    }
+    
+    
 
     function getBetInfo(uint256 index) public view returns (uint256 answerBlockNumber, address bettor, byte challenges) {
         BetInfo memory b = _bets[index];
