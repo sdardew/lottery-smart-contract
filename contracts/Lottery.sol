@@ -114,7 +114,7 @@ contract Lottery {
         b.challenges = challenges; // byte
 
         _bets[_tail] = b;
-        _tail++; // 32byte 변홬
+        _tail++; // 32byte
 
         return true;
     }
