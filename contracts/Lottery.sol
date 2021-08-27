@@ -19,6 +19,7 @@ contract Lottery {
 
     uint256 private _pot; // 팟머니를 저장
 
+    enum BlockStatus {Checkable, NotRevealed, BlockLimitPassed}
     event BET(uint256 index, address bettor, uint256 amount, byte challenges, uint256 answerBlockNumber);
     constructor() public {
         owner = msg.sender;
@@ -53,20 +54,51 @@ contract Lottery {
     function distribute() public {
         uint256 cur;
         BetInfo memory b;
-
+        BlockStatus currentBlockStatus;
         for(cur=_head;cur<_tail; cur++) {
             b = _bets[cur];
+            currentBlockStatus = getBlockStatus(b.answerBlockNumber);
 
             // 정답을 확인하기 위해서는 정답 블록보다 현재 마이닝된 블록이 더 커야 한다
             // Checkable : block.number > AnswerBlockNumber && block.number < BLOCK_LIMIT + AnswerBlockNumber
+            if(currentBlockStatus == BlockStatus.Checkable) {
+                // if win, bettor gets pot
+
+                // if fail, bettor's money goes pot
+
+                // if draw, bettor's money
+            }
 
             // Not Revealed: block.number <= AnswerBlockNumber
+            if(currentBlockStatus == BlockStatus.NotRevealed) {
+                break;
+            }
 
             // Block Limit Passed: bock.number >= AnswerBlockNumber + BLOCK_LIMIT
+            if(currentBlockStatus == BlockStatus.BlockLimitPassed) {
+                // refund
+                // emit refund
+            }
+            popBet(cur);
+
         }
     }
     
-    
+    function getBlockStatus(uint256 answerBlockNumber) internal view returns (BlockStatus) {
+        if(block.number > answerBlockNumber && block.number < BLOCK_LIMIT + answerBlockNumber) {
+            return BlockStatus.Checkable;
+        }
+
+        if(block.number <= answerBlockNumber) {
+            return BlockStatus.NotRevealed;
+        }
+
+        if(block.number >= answerBlockNumber + BLOCK_LIMIT) {
+            return BlockStatus.BlockLimitPassed;
+        }
+
+        return BlockStatus.BlockLimitPassed;
+    }
 
     function getBetInfo(uint256 index) public view returns (uint256 answerBlockNumber, address bettor, byte challenges) {
         BetInfo memory b = _bets[index];
