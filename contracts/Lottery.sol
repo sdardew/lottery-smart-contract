@@ -105,13 +105,15 @@ contract Lottery {
         c1 = c1 >> 4; // 0xab -> 0x0a
         c1 = c1 << 4; // 0x0a -> 0x0
 
+        a1 = a1 >> 4;
+        a1 = a1 << 4;
 
         // Get Second number
-        c2 = c2 >> 4;
         c2 = c2 << 4;
+        c2 = c2 >> 4;
 
-        a1 = a2 << 4;
-        a2 = a1 >> 4;
+        a2 = a2 << 4;
+        a2 = a2 >> 4;
 
         if(a1 == c1 && a2 == c2) {
             return BettingResult.Win;
