@@ -1,4 +1,5 @@
 const Lottery = artifacts.require("Lottery");
+const { assert } = require("chai");
 const assertRevert = require("./assertRevert");
 const expectEvent = require('./expectEvent');
 // 파라미터에 차례로 0번 주소, 1번 주소, 2번 주소 ... 이렇게 들어온다
@@ -45,6 +46,15 @@ contract('Lottery', function([deployer, user1, user2]){
             
             // check log
             await expectEvent.inLogs(receipt.logs, 'BET');
+        })
+    })
+
+    describe.only('isMatch', function() {
+        it('should be BettingResult.Win when two characters match', async () => {
+            let blockHash = '0xab2cfc92182162a97edd055abfb230c98af2eb57547f43c6560829d699680fe0';
+            let matchingResult = await lottery.isMatch('0xab', blockHash)
+
+            assert.equal(matchingResult, 1);
         })
     })
 })
