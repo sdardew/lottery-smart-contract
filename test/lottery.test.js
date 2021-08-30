@@ -16,7 +16,7 @@ contract('Lottery', function([deployer, user1, user2]){
         assert.equal(pot, 0)
     })
 
-    describe.only('Bet', function() {
+    describe('Bet', function() {
         it('should fail when the bet money is not 0.005 ETH', async () => {
             // Fail transaction
             await assertRevert(lottery.bet('0xab', {from : user1, value: 4000000000000000})) // error를 try-catch로 처리하는지 확인
@@ -50,11 +50,29 @@ contract('Lottery', function([deployer, user1, user2]){
     })
 
     describe.only('isMatch', function() {
-        it('should be BettingResult.Win when two characters match', async () => {
-            let blockHash = '0xab2cfc92182162a97edd055abfb230c98af2eb57547f43c6560829d699680fe0';
-            let matchingResult = await lottery.isMatch('0xab', blockHash)
+        let blockHash = '0xab2cfc92182162a97edd055abfb230c98af2eb57547f43c6560829d699680fe0';
 
+        // 두 글자 모두 맞힌 경우
+        it('should be BettingResult.Win when two characters match', async () => {
+            let matchingResult = await lottery.isMatch('0xab', blockHash)
             assert.equal(matchingResult, 1);
+        })
+
+        // 두 글자 모두 틀린 경우
+        it('should be BettingResult.Fail when two characters match', async () => {
+            let matchingResult = await lottery.isMatch('0xcd', blockHash)
+            assert.equal(matchingResult, 0);
+        })
+
+        // 한 글자만 맞힌 경우
+        it('should be BettingResult.Draw when two characters match', async () => {
+            // 두 글자 중 앞의 글자를 맞힌 경우
+            let matchingResult = await lottery.isMatch('0xad', blockHash)
+            assert.equal(matchingResult, 2);
+
+            // 두 글자 중 뒤의 글자를 맞힌 경우
+            matchingResult = await lottery.isMatch('0xdb', blockHash)
+            assert.equal(matchingResult, 2);
         })
     })
 })
