@@ -11,6 +11,7 @@ contract Lottery {
     uint256 private _tail;
     uint256 private _head;
     mapping(uint256 => BetInfo) private _bets;
+
     address payable public owner;
 
     uint256 constant internal BLOCK_LIMIT = 256;
@@ -37,6 +38,20 @@ contract Lottery {
     // view: 스마트 컨트랙트에 변수를 조회하는 수식어
     function getPot() public view returns (uint256 pot) {
         return _pot;
+    }
+
+    /**
+     * @dev 베팅과 정답 확인을 한다. 유저는 0.005 ETH를 보내야 하고, 베팅용 1 byte 글자를 보낸다.
+     * 큐에 저장된 베팅 정보는 이후 distribute 함수에서 해결한다.
+     * @param challenges 유저가 베팅하는 글자
+     * @return 함수가 잘 수행되었는지 확인하는 bool
+     */
+    function betAndDistribute(byte challenges) public payable returns (bool result) {
+        bet(challenges);
+
+        distribute();
+
+        return true;
     }
 
     /**
@@ -71,7 +86,7 @@ contract Lottery {
         BlockStatus currentBlockStatus;
         BettingResult currentBettingResult;
 
-        for(cur=_head;cur<_tail; cur++) {
+        for(cur=_head; cur<_tail; cur++) {
             b = _bets[cur];
             currentBlockStatus = getBlockStatus(b.answerBlockNumber);
 
@@ -107,7 +122,7 @@ contract Lottery {
                     transferAmount = transferAfterPayingFee(b.bettor, BET_AMOUNT);
 
                     // emit DRAW
-                    emit FAIL(cur, b.bettor, transferAmount, b.challenges, answerBlockHash[0], b.answerBlockNumber);
+                    emit DRAW(cur, b.bettor, transferAmount, b.challenges, answerBlockHash[0], b.answerBlockNumber);
                 }
             }
 
@@ -133,7 +148,7 @@ contract Lottery {
     function transferAfterPayingFee(address payable addr, uint256 amount) internal returns (uint256) {
         // uint256 fee = amount / 100;
         uint256 fee = 0; // fee for test
-        uint256 amountWithoutFree;
+        uint256 amountWithoutFree = amount - fee;
 
         // trensfer to addr
         addr.transfer(amountWithoutFree);
@@ -165,6 +180,7 @@ contract Lottery {
 
         byte c1 = challenges;
         byte c2 = challenges;
+        
         byte a1 = answer[0];
         byte a2 = answer[0];
 
