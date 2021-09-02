@@ -1,5 +1,5 @@
 # lottery-smart-contract
-Lottery Dapp
+
 ``` Solidity
 pragma solidity >=0.4.22 <0.9.0;
 
@@ -16,4 +16,14 @@ contract Lottery {
         return 6;
     }
 }
+```
+
+### Install truffle and ganache-cli
+``` shell
+$ npm install -g truffle
+$ npm install -g ganache-cli
+```
+### Run contracts
+```
+$ 
 ```
